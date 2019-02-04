@@ -1,6 +1,9 @@
+import java.util.ArrayList;
+
 public class Depot {
 
     private Coordinate coordinate;
+    private ArrayList<Vehicle> vehicles;
     private int depotID;
     private int maxDuration;
     private int maxLoad;
@@ -12,6 +15,7 @@ public class Depot {
         this.maxLoad = maxLoad;
         this.maxStartingVehiclesAvailable= maxVehiclesAvailable;
         this.coordinate = coordinate;
+        this.vehicles = new ArrayList<>();
     }
 
     public Coordinate getCoordinate() {
