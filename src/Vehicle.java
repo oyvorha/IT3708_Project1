@@ -58,4 +58,8 @@ public class Vehicle {
     public int getVehicleID() {
         return vehicleID;
     }
+
+    public ArrayList<Customer> getCustomers() {
+        return customers;
+    }
 }
