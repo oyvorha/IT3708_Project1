@@ -37,4 +37,8 @@ public class Depot {
     public int getMaxStartingVehiclesAvailable() {
         return maxStartingVehiclesAvailable;
     }
+
+    public ArrayList<Vehicle> getVehicles() {
+        return vehicles;
+    }
 }
