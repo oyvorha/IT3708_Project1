@@ -18,6 +18,11 @@ public class Depot {
         this.vehicles = new ArrayList<>();
     }
 
+    @Override
+    public String toString() {
+        return "Depot with ID "+depotID;
+    }
+
     public Coordinate getCoordinate() {
         return coordinate;
     }
@@ -40,5 +45,9 @@ public class Depot {
 
     public ArrayList<Vehicle> getVehicles() {
         return vehicles;
+    }
+
+    public void setCoordinate (Coordinate coordinate){
+        this.coordinate = coordinate;
     }
 }

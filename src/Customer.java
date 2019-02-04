@@ -5,13 +5,20 @@ public class Customer {
 
     private int customerNo;
     private int demand;
+    private int serviceDuration;
     private Vehicle visitingVehicle;
     private Coordinate coordinate;
 
-    Customer(int customer_no, int demand, Coordinate coordinate) {
-        this.customerNo = customer_no;
+    Customer(int customerNo, int serviceDuration, int demand, Coordinate coordinate) {
+        this.customerNo = customerNo;
+        this.serviceDuration = serviceDuration;
         this.demand = demand;
         this.coordinate = coordinate;
+    }
+
+    @Override
+    public String toString() {
+        return "Customer with ID "+getCustomerNo();
     }
 
     public int getCustomerNo() {
