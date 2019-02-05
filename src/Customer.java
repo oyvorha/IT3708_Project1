@@ -1,7 +1,7 @@
 import java.util.ArrayList;
 import java.util.Objects;
 
-public class Customer {
+public class Customer implements Node {
 
     private int customerNo;
     private int demand;
