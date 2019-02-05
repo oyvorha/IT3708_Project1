@@ -4,7 +4,7 @@ public class Route {
 
     private Vehicle vehicle;
     private ArrayList<Node> nodes;
-    private int totalDistance;
+    private double totalDistance;
 
     public Route(){
         this.nodes = new ArrayList<>();
@@ -23,18 +23,28 @@ public class Route {
         }
     }
 
-    public int calculateRoute() {
+    public double calculateRoute() {
         int distance = 0;
         Coordinate previousCoordinate = this.nodes.get(0).getCoordinate();
-        for (Node node : this.nodes.subList(1, this.nodes.size())) {
+        for (Node node : this.nodes.subList(1, this.nodes.size()-1)) {
             distance += node.getCoordinate().getEuclidianDistance(previousCoordinate);
             previousCoordinate = node.getCoordinate();
         }
-        this.totalDistance = distance;
         return distance;
     }
 
-    public float getAddedDistance(Customer customer) {
+    public double getAddedDistance(Customer customer, Depot endDepot) {
+        double oldDistance = this.totalDistance;
+        this.addCustomer(customer);
+        this.setEndDepot(endDepot);
+        double newDistance = this.calculateRoute();
+        if (oldDistance > newDistance) {
+            return newDistance-oldDistance;
+        } else {
+            this.removeCustomer(customer);
+            this.removeEndDepot(endDepot);
+            this.calculateRoute();
+        }
         return 0;
     }
 
@@ -54,6 +64,12 @@ public class Route {
             }
         }
         return demand;
+    }
+
+    public void removeEndDepot(Depot endDepot) {
+        if (this.nodes.contains(endDepot)){
+            this.nodes.remove(endDepot);
+        }
     }
 
     public void setStartDepot(Depot startDepot) {
@@ -80,11 +96,16 @@ public class Route {
         return vehicle;
     }
 
-    public int getTotalDistance() {
+    public double getTotalDistance() {
         return totalDistance;
     }
 
     public ArrayList<Node> getNodes() {
         return nodes;
+    }
+
+    public void setTotalDistance() {
+        totalDistance = calculateRoute();
+        this.totalDistance = totalDistance;
     }
 }
