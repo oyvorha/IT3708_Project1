@@ -6,7 +6,6 @@ public class Customer {
     private int customerNo;
     private int demand;
     private int serviceDuration;
-    private Vehicle visitingVehicle;
     private Coordinate coordinate;
 
     Customer(int customerNo, int serviceDuration, int demand, Coordinate coordinate) {
@@ -18,7 +17,7 @@ public class Customer {
 
     @Override
     public String toString() {
-        return "Customer with ID "+getCustomerNo();
+        return "Customer "+getCustomerNo();
     }
 
     public int getCustomerNo() {
@@ -33,12 +32,5 @@ public class Customer {
         return coordinate;
     }
 
-    public void setVisitingVehicle(Vehicle visitingVehicle) {
-        this.visitingVehicle = visitingVehicle;
-    }
-
-    public boolean visited() {
-        return !Objects.isNull(this.visitingVehicle);
-    }
 
 }
