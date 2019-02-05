@@ -3,13 +3,13 @@ public class Vehicle {
 
     private int maxLoad;
     private int vehicleID;
-    private int maxDuration;
+    private int maxDistance;
 
 
-    Vehicle(int vehicleID, int maxLoad, int maxDuration) {
+    Vehicle(int vehicleID, int maxLoad, int maxDistance) {
         this.maxLoad = maxLoad;
         this.vehicleID = vehicleID;
-        this.maxDuration = maxDuration;
+        this.maxDistance = maxDistance;
     }
 
     @Override
@@ -23,4 +23,7 @@ public class Vehicle {
 
     public int getMaxLoad() { return maxLoad; }
 
+    public int getMaxDistance() {
+        return maxDistance;
+    }
 }

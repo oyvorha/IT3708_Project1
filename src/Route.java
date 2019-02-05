@@ -36,6 +36,21 @@ public class Route {
         return distance;
     }
 
+    public boolean checkValidRoute() {
+        if (this.distance > this.vehicle.getMaxDistance()){
+            return false;
+        }
+        return this.getTotalDemand() > vehicle.getMaxLoad();
+    }
+
+    private int getTotalDemand() {
+        int demand = 0;
+        for (Customer c : this.customers) {
+            demand += c.getDemand();
+        }
+        return demand;
+    }
+
     public void setStartDepot(Depot startDepot) {
         this.startDepot = startDepot;
     }
