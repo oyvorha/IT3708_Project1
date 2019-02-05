@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Depot {
+public class Depot implements Node {
 
     private Coordinate coordinate;
     private int depotID;
