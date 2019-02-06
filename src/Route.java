@@ -6,14 +6,23 @@ public class Route {
     private ArrayList<Node> nodes;
     private double totalDistance;
 
-    public Route(){
+    public Route(Depot initialDepot){
         this.nodes = new ArrayList<>();
         this.totalDistance = 0;
+        this.setStartDepot(initialDepot);
+        this.setEndDepot(initialDepot);
     }
 
     public void addCustomer(Customer customer) {
         if (!this.nodes.contains(customer)) {
-            this.nodes.add(customer);
+            this.nodes.add(this.nodes.size()-1, customer);
+            setTotalDistance();
+        }
+    }
+
+    public void testAddCustomer(Customer customer) {
+        if (!this.nodes.contains(customer)) {
+            this.nodes.add(this.nodes.size()-1, customer);
         }
     }
 
@@ -33,19 +42,12 @@ public class Route {
         return distance;
     }
 
-    public double getAddedDistance(Customer customer, Depot endDepot) {
+    public double getAddedDistance(Customer customer) {
         double oldDistance = this.totalDistance;
-        this.addCustomer(customer);
-        this.setEndDepot(endDepot);
+        testAddCustomer(customer);
         double newDistance = this.calculateRoute();
-        if (oldDistance > newDistance) {
-            return newDistance-oldDistance;
-        } else {
-            this.removeCustomer(customer);
-            this.removeEndDepot(endDepot);
-            this.calculateRoute();
-        }
-        return 0;
+        this.removeCustomer(customer);
+        return newDistance-oldDistance;
     }
 
     public boolean checkValidRoute() {
