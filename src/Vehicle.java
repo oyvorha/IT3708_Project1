@@ -6,10 +6,18 @@ public class Vehicle {
     private int maxDistance;
 
 
-    Vehicle(int vehicleID, int maxLoad, int maxDistance) {
-        this.maxLoad = maxLoad;
+    Vehicle(int vehicleID, int maxDistance, int maxLoad) {
         this.vehicleID = vehicleID;
-        this.maxDistance = maxDistance;
+        if (maxDistance == 0){
+            this.maxDistance = 9999999;
+        } else {
+            this.maxDistance = maxDistance;
+        }
+        if (maxLoad == 0){
+            this.maxLoad = 9999999;
+        } else {
+            this.maxLoad = maxLoad;
+        }
     }
 
     @Override

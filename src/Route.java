@@ -5,18 +5,21 @@ public class Route {
     private Vehicle vehicle;
     private ArrayList<Node> nodes;
     private double totalDistance;
+    private int currentDemand;
 
     public Route(Depot initialDepot){
         this.nodes = new ArrayList<>();
         this.totalDistance = 0;
-        this.setStartDepot(initialDepot);
-        this.setEndDepot(initialDepot);
+        this.currentDemand = 0;
+        this.nodes.add(initialDepot);
+        this.nodes.add(initialDepot);
     }
 
     public void addCustomer(Customer customer) {
         if (!this.nodes.contains(customer)) {
             this.nodes.add(this.nodes.size()-1, customer);
             setTotalDistance();
+            this.currentDemand += customer.getDemand();
         }
     }
 
@@ -42,30 +45,22 @@ public class Route {
         return distance;
     }
 
-    public double getAddedDistance(Customer customer) {
+    public double getAddedDistance(Customer customer, Depot closestDepot) {
         double oldDistance = this.totalDistance;
+        Depot oldDepot = this.getEndDepot();
         testAddCustomer(customer);
+        this.setEndDepot(closestDepot);
         double newDistance = this.calculateRoute();
         this.removeCustomer(customer);
+        this.setEndDepot(oldDepot);
         return newDistance-oldDistance;
     }
 
-    public boolean checkValidRoute() {
-        if (this.totalDistance > this.vehicle.getMaxDistance()){
+    public boolean checkValidRoute(Customer customer, Depot closestDepot) {
+        if ((this.totalDistance+getAddedDistance(customer, closestDepot)) > this.vehicle.getMaxDistance()){
             return false;
         }
-        return this.getTotalDemand() > vehicle.getMaxLoad();
-    }
-
-    private int getTotalDemand() {
-        int demand = 0;
-        for (Node node : this.nodes) {
-            if (node instanceof Customer) {
-                Customer customer = (Customer) node;
-                demand += customer.getDemand();
-            }
-        }
-        return demand;
+        return (this.getCurrentDemand()+customer.getDemand()) < vehicle.getMaxLoad();
     }
 
     public void removeEndDepot(Depot endDepot) {
@@ -109,5 +104,9 @@ public class Route {
     public void setTotalDistance() {
         totalDistance = calculateRoute();
         this.totalDistance = totalDistance;
+    }
+
+    public int getCurrentDemand() {
+        return currentDemand;
     }
 }
