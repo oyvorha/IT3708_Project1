@@ -61,7 +61,6 @@ public class ReadFromFile {
     }
 
     public void initialize(ArrayList<List<Integer>> intArray){
-
         for (int i=0; i<intArray.size(); i++){
             List<Integer> intList = intArray.get(i);
             if (intList.size() == 3){
@@ -97,6 +96,58 @@ public class ReadFromFile {
                 this.customers.add(c);
             }
         }
+        this.adjustCoordinates(this.getMinimalX(), this.getMinimalY());
+    }
+
+    public int getMinimalX() {
+        int minimalX = 0;
+        for (Customer customer : this.customers) {
+            int newX = customer.getCoordinate().getX();
+            if (newX < minimalX) {
+                minimalX = newX;
+            }
+        }
+        for (Depot depot : this.depots) {
+            int newDepotX = depot.getCoordinate().getX();
+            if (newDepotX < minimalX) {
+                minimalX = newDepotX;
+            }
+        }
+        return minimalX;
+    }
+
+    public int getMinimalY(){
+        int minimalY = 0;
+        for (Customer customer : this.customers) {
+            int newY = customer.getCoordinate().getY();
+            if (newY < minimalY) {
+                minimalY = newY;
+            }
+        }
+        for (Depot depot : this.depots) {
+            int newDepotY = depot.getCoordinate().getY();
+            if (newDepotY < minimalY) {
+                minimalY = newDepotY;
+            }
+        }
+        return minimalY;
+    }
+
+    public void adjustCoordinates(int minimalX, int minimalY){
+        for (Customer customer : this.customers){
+            Coordinate customerCoordinate = customer.getCoordinate();
+            int oldCustomerX = customerCoordinate.getX();
+            customer.getCoordinate().setX(oldCustomerX -= minimalX);
+            int oldCustomerY = customerCoordinate.getY();
+            customer.getCoordinate().setY(oldCustomerY -= minimalY);
+        }
+        for (Depot depot : this.depots){
+            Coordinate depotCoordinate = depot.getCoordinate();
+            int oldDepotX = depotCoordinate.getX();
+            depot.getCoordinate().setX(oldDepotX -= minimalX);
+            int oldDepotY = depot.getCoordinate().getY();
+            depot.getCoordinate().setY(oldDepotY-= minimalY);
+        }
     }
 
     public ArrayList<Depot> getDepots(){
@@ -116,9 +167,13 @@ public class ReadFromFile {
     }
 
     public static void main(String[] args) {
-        String filepath = "./Files/DataFiles/p01";
-        ReadFromFile readFromFile = new ReadFromFile(filepath);
-        System.out.println("No of customers: "+readFromFile.customers.size());
-        System.out.println("No of depots: "+readFromFile.depots.size());
+        ReadFromFile readFromFile = new ReadFromFile("./Files/DataFiles/p23");
+        /*
+        for (Customer customer : readFromFile.getCustomers()){
+            System.out.println(customer);
+        }
+        */
+
     }
+
 }
