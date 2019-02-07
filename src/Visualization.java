@@ -21,7 +21,7 @@ public class Visualization {
         JFrame frame = new JFrame();
 
         JLabel label = new JLabel();
-        label.setText("Total route cost: " + cost + "   ----   Optimal solution has cost: " + optimalCost);
+        label.setText("Total route cost: " + cost + "   ----  Benchmark solution has cost: " + optimalCost);
 
         Painter painter = new Painter(routes);
         painter.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
