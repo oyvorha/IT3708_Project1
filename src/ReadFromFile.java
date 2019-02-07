@@ -200,14 +200,4 @@ public class ReadFromFile {
         return this.vehiclesPerDepot;
     }
 
-    public static void main(String[] args) {
-        ReadFromFile readFromFile = new ReadFromFile("./Files/DataFiles/p23");
-        /*
-        for (Customer customer : readFromFile.getCustomers()){
-            System.out.println(customer);
-        }
-        */
-
-    }
-
 }
