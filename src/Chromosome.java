@@ -6,9 +6,11 @@ public class Chromosome {
 
     private ArrayList<Route> routes;
     private int totalDistance;
+    private ArrayList<Customer> restCustomers;
 
     public Chromosome() {
         this.routes = new ArrayList<>();
+        this.restCustomers = new ArrayList<>();
     }
 
     public ArrayList<Route> getRoutes() {
@@ -27,5 +29,17 @@ public class Chromosome {
                 distance += route.calculateRoute();
             }
         this.totalDistance = distance;
+    }
+
+    public ArrayList<Customer> getRestCust() {
+        return restCustomers;
+    }
+
+    public void addRestCustomer(Customer customer) {
+        this.restCustomers.add(customer);
+    }
+
+    public ArrayList<Customer> getRestCustomers(){
+        return this.restCustomers;
     }
 }

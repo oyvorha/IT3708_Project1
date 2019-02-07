@@ -17,13 +17,13 @@ public class Visualization {
     private final static int SCREEN_HEIGHT = 800;
 
 
-    public void visualize(Map<Route, List<Node>> routes, double cost, double optimalCost) {
+    public void visualize(Map<Route, List<Node>> routes, List<Customer> restCustomers, double cost, double optimalCost) {
         JFrame frame = new JFrame();
 
         JLabel label = new JLabel();
         label.setText("Total route cost: " + cost + "   ----  Benchmark solution has cost: " + optimalCost);
 
-        Painter painter = new Painter(routes);
+        Painter painter = new Painter(routes, restCustomers);
         painter.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));
 
         frame.add(painter, BorderLayout.CENTER);
@@ -48,9 +48,11 @@ public class Visualization {
 
 
         private Map<Route, List<Node>> routes;
+        private List<Customer> restCustomers;
 
-        Painter(Map<Route, List<Node>> routes) {
+        Painter(Map<Route, List<Node>> routes, List<Customer> restCustomers) {
             this.routes = routes;
+            this.restCustomers = restCustomers;
         }
 
         @Override
@@ -94,6 +96,10 @@ public class Visualization {
                     lastCoord = coord;
                 }
             });
+            for (Customer c: restCustomers) {
+                g.setColor(Color.GRAY);
+                g.fillOval(c.getCoordinate().getX()*scale, c.getCoordinate().getY()*scale, SIZE, SIZE);
+            }
         }
     }
 

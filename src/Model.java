@@ -24,53 +24,48 @@ public class Model {
     public void getSolution(){
         Chromosome chromosome = new Chromosome();
         for (int j = 0; j<this.readFromFile.getVehicles().size(); j++) {
-            Depot startDepot = this.readFromFile.getDepots().get(j/this.readFromFile.getDepots().size());
+            int depotIndex = j/this.readFromFile.getVehiclesPerDepot();
+            Depot startDepot = this.readFromFile.getDepots().get(depotIndex);
             Route route = new Route(startDepot);
             route.setVehicle(this.readFromFile.getVehicles().get(j));
             chromosome.addRoute(route);
         }
         // hva med å shuffle customers her
         long timeStart = System.currentTimeMillis();
-        boolean timeout = false;
+        ArrayList<Customer> restCustomers = new ArrayList<>();
         for (Customer customer : this.readFromFile.getCustomers()){
             Boolean valid = false;
             Depot closestDepot = this.getClosestDepot(customer);
             while (!valid) {
                 int caseNumber = this.random.nextInt(100);
-                if (caseNumber <= 5 && !timeout) {
-                    //System.out.println("Case 0");
+                if (caseNumber <= 0) {
                     Route route = this.doCase0(chromosome, customer);
-                    int index = route.getNodes().size()-2;
+                    int index = 1;
+                    if (route.getNodes().size() > 2) {
+                        index = route.getNodes().size()-2;
+                    }
                     valid = route.checkValidRoute(customer, closestDepot, index);
                     if (valid){
                         route.addCustomer(customer, index);
                         route.setEndDepot(closestDepot);
                         System.out.println("allocated "+this.readFromFile.getCustomers().indexOf(customer));
                     }
-                } else if (caseNumber >= 6 && !timeout) {
-                    //System.out.println("Case 1");
+                } else if (caseNumber >= 1) {
                     RouteAndIndex routeAndIndex = this.doCase1(chromosome, customer);
                     Route route = routeAndIndex.getRoute();
-                    int index = routeAndIndex.getIndex();
-                    valid = route.checkValidRoute(customer, closestDepot, index);
+                    valid = routeAndIndex.getValid();
                     if (valid){
-                        route.addCustomer(customer, index);
-                        route.setEndDepot(closestDepot);
-                        System.out.println("allocated."+this.readFromFile.getCustomers().indexOf(customer));
+                        route.addCustomer(customer, routeAndIndex.getIndex());
+                        route.setEndDepot(routeAndIndex.getClosestDepot());
                     }
                 }
-                if ((System.currentTimeMillis()-timeStart) > 20000){
-                    timeout = true;
+                if ((System.currentTimeMillis()-timeStart) > 10000){
+                    chromosome.addRestCustomer(customer);
+                    System.out.println("NOT IN SOLUTION");
+                    valid = true;
+                    timeStart = System.currentTimeMillis();
                 }
-                }
-                /*
-                else if (caseNumber == 2){
-                    Route route = this.doCase2(chromosome, customer);
-                }
-                else if (caseNumber == 3){
-                    Route route = this.doCase3(chromosome, customer);
-                }
-                */
+            }
         }
         chromosomes.add(chromosome);
     }
@@ -85,29 +80,33 @@ public class Model {
         // add customer to the route to which it adds the minimal distance
         Route bestRoute = chromosome.getRoutes().get(0);
         double minimalAddedDistance = 1000;
-        int index = chromosome.getRoutes().get(0).getNodes().size()-1;
+        int index = bestRoute.getNodes().size()-2;
+        Depot closestDepot = this.getClosestDepot(customer);
+        Depot bestDepot = closestDepot;
+        boolean valid = false;
         for (Route route : chromosome.getRoutes()) {
-            for (int i = 1; i < chromosome.getRoutes().size()-1; i++){
-                double addedDistance = route.getAddedDistance(customer, this.getClosestDepot(customer), i);
-                if (addedDistance < minimalAddedDistance) {
+            ArrayList<Node> routeNodes = route.getNodes();
+            for (int i = 1; i < route.getNodes().size(); i++){
+                if (i < route.getNodes().size() && routeNodes.size() > 2) {
+                    if (routeNodes.get(routeNodes.size()-2) instanceof Customer) {
+                        closestDepot = this.getClosestDepot((Customer) routeNodes.get(routeNodes.size()-2));
+                    }
+                }
+                double addedDistance = route.getAddedDistance(customer, closestDepot, i);
+                boolean feasible = route.checkValidRoute(customer, closestDepot, i);
+                if ((addedDistance < minimalAddedDistance) && feasible) {
                     bestRoute = route;
                     minimalAddedDistance = addedDistance;
                     index = i;
+                    bestDepot = closestDepot;
+                    valid = true;
                 }
             }
         }
-        System.out.println("Route "+bestRoute.getVehicle().getVehicleID()+" has min added distance "+ minimalAddedDistance);
-        RouteAndIndex routeAndIndex = new RouteAndIndex(bestRoute, index);
+        RouteAndIndex routeAndIndex = new RouteAndIndex(bestRoute, index, bestDepot, valid);
         return routeAndIndex;
     }
 
-    /*
-    public Route doCase2(Chromosome chromosome, Customer customer){
-    }
-
-    public Route doCase3(Chromosome chromosome, Customer customer){
-    }
-    */
 
     public Depot getClosestDepot(Customer customer){
         Coordinate customerCoordinate = customer.getCoordinate();
@@ -123,22 +122,7 @@ public class Model {
         return closestDepot;
     }
 
-    public static void main(String[] args) {
-        ReadFromFile readFromFile = new ReadFromFile("./Files/DataFiles/p22");
-        System.out.println("No of customers: "+readFromFile.getCustomers().size());
-        Model model = new Model(readFromFile);
-        model.getFirstSolutions(1);
-        double total = 0;
-        ArrayList<Route> cRoutes = model.chromosomes.get(0).getRoutes();
-        HashMap<Route, List<Node>> visual = new HashMap<>();
-        for (Route r : cRoutes) {
-            total += r.getTotalDistance();
-            ArrayList<Node> nodes = r.getNodes();
-            visual.put(r, nodes);
-        }
-        Visualization visualization = new Visualization();
-        visualization.visualize(visual, total, 0);
-
+    public ArrayList<Chromosome> getChromosomes() {
+        return chromosomes;
     }
-
 }

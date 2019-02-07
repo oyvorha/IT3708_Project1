@@ -3,6 +3,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Arrays;
 
@@ -11,6 +12,7 @@ public class ReadFromFile {
     private ArrayList<Depot> depots;
     private ArrayList<Customer> customers;
     private ArrayList<Vehicle> vehicles;
+    private HashMap<String, Double> benchmarks;
 
     private String filepath;
     private int depotCount;
@@ -27,7 +29,35 @@ public class ReadFromFile {
         this.depots = new ArrayList<>();
         this.customers = new ArrayList<>();
         this.vehicles= new ArrayList<>();
+        this.benchmarks = new HashMap<>();
+        this.fillBenchmark();
         this.initialize(this.fileToIntArray());
+    }
+
+    public void fillBenchmark() {
+        benchmarks.put("p01", 570.53);
+        benchmarks.put("p02", 462.94);
+        benchmarks.put("p03", 641.19);
+        benchmarks.put("p04", 1013.26);
+        benchmarks.put("p05", 753.07);
+        benchmarks.put("p06", 882.29);
+        benchmarks.put("p07", 896.11);
+        benchmarks.put("p08", 4528.74);
+        benchmarks.put("p09", 3969.94);
+        benchmarks.put("p10", 3786.58);
+        benchmarks.put("p11", 3690.5);
+        benchmarks.put("p12", 1304.69);
+        benchmarks.put("p13", 1318.95);
+        benchmarks.put("p14", 1285.69);
+        benchmarks.put("p15", 2511.92);
+        benchmarks.put("p16", 2572.23);
+        benchmarks.put("p17", 2608.84);
+        benchmarks.put("p18", 3795.98);
+        benchmarks.put("p19", 3839.36);
+        benchmarks.put("p20", 4005.92);
+        benchmarks.put("p21", 5640.88);
+        benchmarks.put("p22", 5751.57);
+        benchmarks.put("p23", 6098.21);
     }
 
     public ArrayList<List<Integer>> fileToIntArray(){
@@ -99,6 +129,10 @@ public class ReadFromFile {
         this.adjustCoordinates(this.getMinimalX(), this.getMinimalY());
     }
 
+    public double getBenchmark(String file) {
+        return this.benchmarks.get(file);
+    }
+
     public int getMinimalX() {
         int minimalX = 0;
         for (Customer customer : this.customers) {
@@ -164,16 +198,6 @@ public class ReadFromFile {
 
     public int getVehiclesPerDepot(){
         return this.vehiclesPerDepot;
-    }
-
-    public static void main(String[] args) {
-        ReadFromFile readFromFile = new ReadFromFile("./Files/DataFiles/p23");
-        /*
-        for (Customer customer : readFromFile.getCustomers()){
-            System.out.println(customer);
-        }
-        */
-
     }
 
 }
