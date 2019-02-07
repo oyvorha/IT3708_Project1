@@ -47,7 +47,7 @@ public class Route {
 
     public double getAddedDistance(Customer customer, Depot closestDepot, int index) {
         double oldDistance = this.totalDistance;
-        Node oldDepot = this.getEndDepot();
+        Depot oldDepot = this.getEndDepot();
         testAddCustomer(customer, index);
         this.setEndDepot(closestDepot);
         double newDistance = this.calculateRoute();
