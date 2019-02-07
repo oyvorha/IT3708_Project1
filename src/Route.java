@@ -15,17 +15,17 @@ public class Route {
         this.nodes.add(initialDepot);
     }
 
-    public void addCustomer(Customer customer) {
+    public void addCustomer(Customer customer, int index) {
         if (!this.nodes.contains(customer)) {
-            this.nodes.add(this.nodes.size()-1, customer);
+            this.nodes.add(index, customer);
             setTotalDistance();
             this.currentDemand += customer.getDemand();
         }
     }
 
-    public void testAddCustomer(Customer customer) {
+    public void testAddCustomer(Customer customer, int index) {
         if (!this.nodes.contains(customer)) {
-            this.nodes.add(this.nodes.size()-1, customer);
+            this.nodes.add(index, customer);
         }
     }
 
@@ -45,10 +45,10 @@ public class Route {
         return distance;
     }
 
-    public double getAddedDistance(Customer customer, Depot closestDepot) {
+    public double getAddedDistance(Customer customer, Depot closestDepot, int index) {
         double oldDistance = this.totalDistance;
-        Depot oldDepot = this.getEndDepot();
-        testAddCustomer(customer);
+        Node oldDepot = this.getEndDepot();
+        testAddCustomer(customer, index);
         this.setEndDepot(closestDepot);
         double newDistance = this.calculateRoute();
         this.removeCustomer(customer);
@@ -56,8 +56,8 @@ public class Route {
         return newDistance-oldDistance;
     }
 
-    public boolean checkValidRoute(Customer customer, Depot closestDepot) {
-        if ((this.totalDistance+getAddedDistance(customer, closestDepot)) > this.vehicle.getMaxDistance()){
+    public boolean checkValidRoute(Customer customer, Depot closestDepot, int index) {
+        if ((this.totalDistance+getAddedDistance(customer, closestDepot, index)) > this.vehicle.getMaxDistance()){
             return false;
         }
         return (this.getCurrentDemand()+customer.getDemand()) < vehicle.getMaxLoad();
