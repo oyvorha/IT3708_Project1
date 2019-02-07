@@ -1,7 +1,6 @@
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Random;
+import java.util.Collections;
 
 public class Model {
 
@@ -17,6 +16,7 @@ public class Model {
 
     public void getFirstSolutions(int numberOfSolutions){
         for (int i = 0; i<numberOfSolutions; i++){
+            Collections.shuffle(this.readFromFile.getCustomers());
             this.getSolution();
         }
     }
@@ -29,8 +29,8 @@ public class Model {
             Route route = new Route(startDepot);
             route.setVehicle(this.readFromFile.getVehicles().get(j));
             chromosome.addRoute(route);
+
         }
-        // hva med å shuffle customers her
         long timeStart = System.currentTimeMillis();
         ArrayList<Customer> restCustomers = new ArrayList<>();
         for (Customer customer : this.readFromFile.getCustomers()){
@@ -38,7 +38,7 @@ public class Model {
             Depot closestDepot = this.getClosestDepot(customer);
             while (!valid) {
                 int caseNumber = this.random.nextInt(100);
-                if (caseNumber <= 0) {
+                if (caseNumber < 0) {
                     Route route = this.doCase0(chromosome, customer);
                     int index = 1;
                     if (route.getNodes().size() > 2) {
@@ -50,7 +50,7 @@ public class Model {
                         route.setEndDepot(closestDepot);
                         System.out.println("allocated "+this.readFromFile.getCustomers().indexOf(customer));
                     }
-                } else if (caseNumber >= 1) {
+                } else if (caseNumber >= 0) {
                     RouteAndIndex routeAndIndex = this.doCase1(chromosome, customer);
                     Route route = routeAndIndex.getRoute();
                     valid = routeAndIndex.getValid();

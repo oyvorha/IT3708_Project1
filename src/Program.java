@@ -4,18 +4,23 @@ import java.util.List;
 
 public class Program {
 
-    private static final int initialSolutions = 1;
-    private static final String dataset = "p18";
+    private static final int initialSolutions = 200;
+    private static final String dataset = "p01";
     private static final int visualSol = 0;
+
 
     public static void main(String[] args) {
         ReadFromFile readFromFile = new ReadFromFile("./Files/DataFiles/"+dataset);
+        Model model = new Model(readFromFile);
         System.out.println("No of customers: "+readFromFile.getCustomers().size());
         System.out.println("No of depots "+readFromFile.getDepots().size());
         System.out.println("No of cars "+readFromFile.getVehicles().size());
-        Model model = new Model(readFromFile);
         model.getFirstSolutions(initialSolutions);
-        Chromosome visualChromosome = model.getChromosomes().get(visualSol);
+
+        GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(0, 0, initialSolutions,
+                model.getChromosomes());
+
+        Chromosome visualChromosome = geneticAlgorithm.getRankedChromosomes().get(visualSol);
         Program.visualizeChromosome(visualChromosome, readFromFile);
     }
 

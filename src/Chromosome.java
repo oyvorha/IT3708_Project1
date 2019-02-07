@@ -1,6 +1,6 @@
 import java.util.ArrayList;
 
-public class Chromosome {
+public class Chromosome implements Comparable<Chromosome> {
 
     // implement checkValidChromosome
 
@@ -11,6 +11,12 @@ public class Chromosome {
     public Chromosome() {
         this.routes = new ArrayList<>();
         this.restCustomers = new ArrayList<>();
+    }
+
+    @Override
+    public String toString() {
+        this.calculateTotalDistance();
+        return ""+this.getTotalDistance();
     }
 
     public ArrayList<Route> getRoutes() {
@@ -41,5 +47,13 @@ public class Chromosome {
 
     public ArrayList<Customer> getRestCustomers(){
         return this.restCustomers;
+    }
+
+    public int getTotalDistance() {
+        return totalDistance;
+    }
+
+    public int compareTo(Chromosome o1) {
+        return (this.totalDistance - o1.totalDistance);
     }
 }
