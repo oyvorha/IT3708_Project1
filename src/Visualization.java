@@ -122,7 +122,6 @@ public class Visualization {
         int yDifference = maxY - minY;
 
         int greatestDifference = Math.max(maxX, maxY);
-        System.out.println(greatestDifference);
         return Math.floorDiv(Math.min(SCREEN_HEIGHT, SCREEN_WIDTH), greatestDifference);
 
     }
