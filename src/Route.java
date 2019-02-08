@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class Route {
 
@@ -66,6 +67,21 @@ public class Route {
     public void removeEndDepot(Depot endDepot) {
         if (this.nodes.contains(endDepot)){
             this.nodes.remove(endDepot);
+        }
+    }
+
+    public boolean checkValid() {
+        if (this.totalDistance > this.vehicle.getMaxDistance()) {
+            return false;
+        } return (this.getCurrentDemand() < this.vehicle.getMaxLoad());
+    }
+
+    public void swapCustomers(int index1, int index2) {
+        Collections.swap(this.nodes, index1, index2);
+        this.setTotalDistance();
+        if (!this.checkValid()) {
+            Collections.swap(this.nodes, index1, index2);
+            this.setTotalDistance();
         }
     }
 
