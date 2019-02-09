@@ -44,7 +44,7 @@ public class GeneticAlgorithm {
             }
         }
 
-    public void crossover(Chromosome chromosome1, Chromosome chromosome2) {
+    public Chromosome crossover(Chromosome chromosome1, Chromosome chromosome2) {
         Chromosome offspringChromosome = new Chromosome(chromosome1);
         Random random = new Random();
         int randomIndex = random.nextInt(chromosome2.getRoutes().size());
@@ -99,6 +99,7 @@ public class GeneticAlgorithm {
             }
             bestRoute.addCustomer(customer, bestIndex);
         }
+        return offspringChromosome;
     }
 
     public Depot getClosestDepot(Customer customer, ArrayList<Depot> depots){
