@@ -84,9 +84,10 @@ public class Route {
     }
 
     public void swapCustomers(int index1, int index2) {
+        double oldDistance = this.getTotalDistance();
         Collections.swap(this.nodes, index1, index2);
         this.setTotalDistance();
-        if (!this.checkValid()) {
+        if (!this.checkValid() || this.totalDistance >= oldDistance) {
             Collections.swap(this.nodes, index1, index2);
             this.setTotalDistance();
         }
