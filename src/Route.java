@@ -16,6 +16,13 @@ public class Route {
         this.nodes.add(initialDepot);
     }
 
+    public Route(Route route){
+        this.nodes = route.getNodes();
+        this.totalDistance = route.getTotalDistance();
+        this.currentDemand = route.getCurrentDemand();
+        this.vehicle = route.getVehicle();
+    }
+
     public void addCustomer(Customer customer, int index) {
         if (!this.nodes.contains(customer)) {
             this.nodes.add(index, customer);
