@@ -55,21 +55,23 @@ public class GeneticAlgorithm {
         ArrayList<Customer> notAllocatedCustomers = new ArrayList<>();
         ArrayList<Route> resetRoutes = new ArrayList<>();
 
-        for (Route route : offspringChromosome.getRoutes()){
+        //offspringChromosome.getRoutes().stream().forEach(c-> System.out.println(c.getNodes()));
+
+        for (Route r : offspringChromosome.getRoutes()){
             //Reset alle i offspringChromosome som har samme startDepot som crossRoute
-            if (route.getStartDepot() == startDepotCrossRoute){
-                for (Node node : route.getNodes()) {
+            if (r.getStartDepot() == startDepotCrossRoute){
+                for (Node node : r.getNodes()) {
                     if (node instanceof Customer) {
                         notAllocatedCustomers.add((Customer) node);
                     }
                 }
-                route.resetRoute();
-                resetRoutes.add(route);
+                r.resetRoute();
+                resetRoutes.add(r);
             }
             //Gå gjennom alle customers i crossRoute og fjern dem fra deres current rute
             for (Node node : crossRoute.getNodes()){
-                if (route.getNodes().contains(node)){
-                    route.getNodes().remove(node);
+                if (r.getNodes().contains(node) && !(node instanceof Depot)){
+                    r.getNodes().remove(node);
                 }
             }
         }
@@ -81,39 +83,23 @@ public class GeneticAlgorithm {
             }
         }
         // Alloker notAllocatedCustomers til ruter
+        long timeStart = System.currentTimeMillis();
         for (Customer customer : notAllocatedCustomers){
-            double minimalAddedDistance = 100000;
-            int bestIndex = 1;
-            Route bestRoute = offspringChromosome.getRoutes().get(0);
-            Depot closestDepot = getClosestDepot(customer, chromosomeDepots);
-            //Sjekk added distance på alle ruter på alle indexer
-            for (Route route : offspringChromosome.getRoutes()) {
-                for (int j = 0; j<route.getNodes().size(); j++){
-                    double addedDistance = route.getAddedDistance(customer, closestDepot, j);
-                    if (addedDistance < minimalAddedDistance){
-                        minimalAddedDistance = addedDistance;
-                        bestRoute = route;
-                        bestIndex = j;
-                    }
-                }
+            RouteAndIndex routeAndIndex = Model.doCase1(offspringChromosome, customer, offspringChromosome.getChromosomeDepots());
+            Route route = routeAndIndex.getRoute();
+            boolean valid = routeAndIndex.getValid();
+            if (valid){
+                route.addCustomer(customer, routeAndIndex.getIndex());
+                route.setEndDepot(routeAndIndex.getClosestDepot());
             }
-            bestRoute.addCustomer(customer, bestIndex);
+            if ((System.currentTimeMillis()-timeStart) > 10000){
+                offspringChromosome.addRestCustomer(customer);
+                System.out.println("CANNOT FIND SOLUTION");
+                valid = true;
+                timeStart = System.currentTimeMillis();
+            }
         }
         return offspringChromosome;
-    }
-
-    public Depot getClosestDepot(Customer customer, ArrayList<Depot> depots){
-        Coordinate customerCoordinate = customer.getCoordinate();
-        Depot closestDepot = depots.get(0);
-        double minDistance = customerCoordinate.getEuclidianDistance(depots.get(0).getCoordinate());
-        for (Depot depot : depots){
-            double distance = customerCoordinate.getEuclidianDistance(depot.getCoordinate());
-            if (distance < minDistance){
-                closestDepot = depot;
-                minDistance = distance;
-            }
-        }
-        return closestDepot;
     }
 
 }
