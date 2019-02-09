@@ -11,6 +11,22 @@ public class Chromosome implements Comparable<Chromosome> {
     public Chromosome() {
         this.routes = new ArrayList<>();
         this.restCustomers = new ArrayList<>();
+        this.calculateTotalDistance();
+    }
+
+    public Chromosome(Chromosome chromosome) {
+        this.routes = this.makeNewRoutes(chromosome.getRoutes());
+        this.restCustomers = chromosome.getRestCustomers();
+        this.totalDistance = chromosome.getTotalDistance();
+    }
+
+    public ArrayList<Route> makeNewRoutes(ArrayList<Route> routes) {
+        ArrayList<Route> newRoutes = new ArrayList<>();
+        for (Route r : routes) {
+            Route newRoute = new Route(r);
+            newRoutes.add(newRoute);
+        }
+        return newRoutes;
     }
 
     @Override
@@ -32,7 +48,7 @@ public class Chromosome implements Comparable<Chromosome> {
     public void calculateTotalDistance() {
         int distance = 0;
         for (Route route : this.routes) {
-                distance += route.calculateRoute();
+                distance += route.getTotalDistance();
             }
         this.totalDistance = distance;
     }
@@ -55,5 +71,18 @@ public class Chromosome implements Comparable<Chromosome> {
 
     public int compareTo(Chromosome o1) {
         return (this.totalDistance - o1.totalDistance);
+    }
+
+    public void perfectSwap() {
+        for (Route r : this.getRoutes()) {
+            if (r.getNodes().size() > 4) {
+                for (int i = 1; i < r.getNodes().size() - 1; i++) {
+                    for (int j = r.getNodes().size() - 2; j > 0; j--) {
+                        r.swapCustomers(i, j);
+                    }
+                }
+            }
+        }
+        this.calculateTotalDistance();
     }
 }

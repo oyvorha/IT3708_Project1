@@ -16,6 +16,13 @@ public class Route {
         this.nodes.add(initialDepot);
     }
 
+    public Route(Route route){
+        this.nodes = route.getNodes();
+        this.totalDistance = route.getTotalDistance();
+        this.currentDemand = route.getCurrentDemand();
+        this.vehicle = route.getVehicle();
+    }
+
     public void addCustomer(Customer customer, int index) {
         if (!this.nodes.contains(customer)) {
             this.nodes.add(index, customer);
@@ -39,7 +46,7 @@ public class Route {
     public double calculateRoute() {
         int distance = 0;
         Coordinate previousCoordinate = this.nodes.get(0).getCoordinate();
-        for (Node node : this.nodes.subList(1, this.nodes.size()-1)) {
+        for (Node node : this.nodes.subList(1, this.nodes.size())) {
             distance += node.getCoordinate().getEuclidianDistance(previousCoordinate);
             previousCoordinate = node.getCoordinate();
         }
@@ -77,9 +84,10 @@ public class Route {
     }
 
     public void swapCustomers(int index1, int index2) {
+        double oldDistance = this.getTotalDistance();
         Collections.swap(this.nodes, index1, index2);
         this.setTotalDistance();
-        if (!this.checkValid()) {
+        if (!this.checkValid() || this.totalDistance >= oldDistance) {
             Collections.swap(this.nodes, index1, index2);
             this.setTotalDistance();
         }
