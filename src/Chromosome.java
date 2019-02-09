@@ -85,4 +85,19 @@ public class Chromosome implements Comparable<Chromosome> {
         }
         this.calculateTotalDistance();
     }
+
+    public ArrayList<Depot> getChromosomeDepots (){
+        ArrayList<Depot> chromosomeDepots = new ArrayList<>();
+        for (Route route : this.routes){
+            Depot startDepot = route.getStartDepot();
+            Depot endDepot = route.getEndDepot();
+            if (!chromosomeDepots.contains(startDepot)){
+                chromosomeDepots.add(startDepot);
+            }
+            if (!chromosomeDepots.contains(endDepot)){
+                chromosomeDepots.add(endDepot);
+            }
+        }
+        return chromosomeDepots;
+    }
 }
