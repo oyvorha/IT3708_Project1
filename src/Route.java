@@ -46,7 +46,7 @@ public class Route {
     public double calculateRoute() {
         int distance = 0;
         Coordinate previousCoordinate = this.nodes.get(0).getCoordinate();
-        for (Node node : this.nodes.subList(1, this.nodes.size()-1)) {
+        for (Node node : this.nodes.subList(1, this.nodes.size())) {
             distance += node.getCoordinate().getEuclidianDistance(previousCoordinate);
             previousCoordinate = node.getCoordinate();
         }
