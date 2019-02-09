@@ -13,15 +13,15 @@ import javax.swing.JPanel;
 
 public class Visualization {
 
-    private final static int SCREEN_WIDTH = 800;
-    private final static int SCREEN_HEIGHT = 800;
+    private final static int SCREEN_WIDTH = 400;
+    private final static int SCREEN_HEIGHT = 400;
 
 
-    public void visualize(Map<Route, List<Node>> routes, List<Customer> restCustomers, double cost, double optimalCost) {
+    public void visualize(Map<Route, List<Node>> routes, List<Customer> restCustomers, double cost, double optimalCost, String header) {
         JFrame frame = new JFrame();
 
         JLabel label = new JLabel();
-        label.setText("Total route cost: " + cost + "   ----  Benchmark solution has cost: " + optimalCost);
+        label.setText(header+" Total route cost: " + cost + "   ----  Benchmark solution has cost: " + optimalCost);
 
         Painter painter = new Painter(routes, restCustomers);
         painter.setPreferredSize(new Dimension(SCREEN_WIDTH, SCREEN_HEIGHT));

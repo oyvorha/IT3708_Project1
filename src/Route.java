@@ -17,10 +17,15 @@ public class Route {
     }
 
     public Route(Route route){
-        this.nodes = route.getNodes();
+        this.nodes = new ArrayList<>();
+        for (Node node : route.getNodes()){
+            this.nodes.add(node);
+        }
         this.totalDistance = route.getTotalDistance();
         this.currentDemand = route.getCurrentDemand();
         this.vehicle = route.getVehicle();
+        this.setStartDepot(route.getStartDepot());
+        this.setEndDepot(route.getEndDepot());
     }
 
     public void addCustomer(Customer customer, int index) {
@@ -40,6 +45,7 @@ public class Route {
     public void removeCustomer(Customer customer) {
         if (this.nodes.contains(customer)){
             this.nodes.remove(customer);
+            this.currentDemand = this.getCurrentDemand() - customer.getDemand();
         }
     }
 
@@ -59,7 +65,7 @@ public class Route {
         testAddCustomer(customer, index);
         this.setEndDepot(closestDepot);
         double newDistance = this.calculateRoute();
-        this.removeCustomer(customer);
+        this.nodes.remove(customer);
         this.setEndDepot(oldDepot);
         return newDistance-oldDistance;
     }
@@ -68,7 +74,7 @@ public class Route {
         if ((this.totalDistance+getAddedDistance(customer, closestDepot, index)) > this.vehicle.getMaxDistance()){
             return false;
         }
-        return (this.getCurrentDemand()+customer.getDemand()) < vehicle.getMaxLoad();
+        return ((this.getCurrentDemand()+customer.getDemand())) <= vehicle.getMaxLoad();
     }
 
     public void removeEndDepot(Depot endDepot) {
@@ -131,12 +137,17 @@ public class Route {
     }
 
     public void resetRoute(){
+        ArrayList<Node> removableNodes = new ArrayList<>();
         for (Node node : this.getNodes()){
             if (node instanceof Customer){
-                this.getNodes().remove(node);
+                removableNodes.add(node);
             }
         }
+        for (Node node : removableNodes){
+            this.getNodes().remove(node);
+        }
         this.setEndDepot(this.getStartDepot());
+        this.setTotalDistance();
     }
 
     public int getCurrentDemand() {

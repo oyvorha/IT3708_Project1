@@ -35,10 +35,10 @@ public class Model {
         ArrayList<Customer> restCustomers = new ArrayList<>();
         for (Customer customer : this.readFromFile.getCustomers()){
             boolean valid = false;
-            Depot closestDepot = this.getClosestDepot(customer);
+            Depot closestDepot = this.getClosestDepot(customer, this.readFromFile.getDepots());
             while (!valid) {
                 int caseNumber = this.random.nextInt(100);
-                if (caseNumber < 0) {
+                if (caseNumber < 50) {
                     Route route = this.doCase0(chromosome, customer);
                     int index = 1;
                     if (route.getNodes().size() > 2) {
@@ -50,7 +50,7 @@ public class Model {
                         route.setEndDepot(closestDepot);
                     }
                 } else {
-                    RouteAndIndex routeAndIndex = this.doCase1(chromosome, customer);
+                    RouteAndIndex routeAndIndex = this.doCase1(chromosome, customer, this.readFromFile.getDepots());
                     Route route = routeAndIndex.getRoute();
                     valid = routeAndIndex.getValid();
                     if (valid){
@@ -77,12 +77,12 @@ public class Model {
         return chromosome.getRoutes().get(routeNumber);
     }
 
-    public RouteAndIndex doCase1(Chromosome chromosome, Customer customer){
+    public static RouteAndIndex doCase1(Chromosome chromosome, Customer customer, ArrayList<Depot> depots){
         // add customer to the route and position to which it adds the minimal distance
         Route bestRoute = chromosome.getRoutes().get(0);
         double minimalAddedDistance = 10000;
         int index = bestRoute.getNodes().size()-2;
-        Depot closestDepot = this.getClosestDepot(customer);
+        Depot closestDepot = Model.getClosestDepot(customer, depots);
         Depot bestDepot = closestDepot;
         boolean valid = false;
         for (Route route : chromosome.getRoutes()) {
@@ -90,7 +90,7 @@ public class Model {
             for (int i = 1; i < route.getNodes().size(); i++){
                 if (i < route.getNodes().size() && routeNodes.size() > 2) {
                     if (routeNodes.get(routeNodes.size()-2) instanceof Customer) {
-                        closestDepot = this.getClosestDepot((Customer) routeNodes.get(routeNodes.size()-2));
+                        closestDepot = Model.getClosestDepot((Customer) routeNodes.get(routeNodes.size()-2), depots);
                     }
                 }
                 double addedDistance = route.getAddedDistance(customer, closestDepot, i);
@@ -108,11 +108,11 @@ public class Model {
         return routeAndIndex;
     }
 
-    public Depot getClosestDepot(Customer customer){
+    public static Depot getClosestDepot(Customer customer, ArrayList<Depot> depots){
         Coordinate customerCoordinate = customer.getCoordinate();
-        Depot closestDepot = this.readFromFile.getDepots().get(0);
-        double minDistance = customerCoordinate.getEuclidianDistance(this.readFromFile.getDepots().get(0).getCoordinate());
-        for (Depot depot : this.readFromFile.getDepots()){
+        Depot closestDepot = depots.get(0);
+        double minDistance = customerCoordinate.getEuclidianDistance(depots.get(0).getCoordinate());
+        for (Depot depot : depots){
             double distance = customerCoordinate.getEuclidianDistance(depot.getCoordinate());
             if (distance < minDistance){
                 closestDepot = depot;

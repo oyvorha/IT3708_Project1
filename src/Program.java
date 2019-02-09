@@ -26,7 +26,7 @@ public class Program {
         Program.visualizeChromosome(visualChromosome, readFromFile);
     }
 
-    public static void visualizeChromosome(Chromosome chromosome, ReadFromFile rff) {
+    public static void visualizeChromosome(Chromosome chromosome, ReadFromFile rff, String header) {
         ArrayList<Route> routes = chromosome.getRoutes();
         HashMap<Route, List<Node>> visual = new HashMap<>();
         for (Route r : routes) {
@@ -34,7 +34,7 @@ public class Program {
             visual.put(r, nodes);
         }
         Visualization visualization = new Visualization();
-        visualization.visualize(visual, chromosome.getRestCustomers() , chromosome.getTotalDistance(), rff.getBenchmark(dataset));
+        visualization.visualize(visual, chromosome.getRestCustomers() , chromosome.getTotalDistance(), rff.getBenchmark(dataset), header);
     }
 
 }
