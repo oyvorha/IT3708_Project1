@@ -34,7 +34,7 @@ public class Model {
         long timeStart = System.currentTimeMillis();
         ArrayList<Customer> restCustomers = new ArrayList<>();
         for (Customer customer : this.readFromFile.getCustomers()){
-            Boolean valid = false;
+            boolean valid = false;
             Depot closestDepot = this.getClosestDepot(customer);
             while (!valid) {
                 int caseNumber = this.random.nextInt(100);
@@ -48,9 +48,8 @@ public class Model {
                     if (valid){
                         route.addCustomer(customer, index);
                         route.setEndDepot(closestDepot);
-                        System.out.println("allocated "+this.readFromFile.getCustomers().indexOf(customer));
                     }
-                } else if (caseNumber >= 0) {
+                } else {
                     RouteAndIndex routeAndIndex = this.doCase1(chromosome, customer);
                     Route route = routeAndIndex.getRoute();
                     valid = routeAndIndex.getValid();
@@ -67,7 +66,9 @@ public class Model {
                 }
             }
         }
-        chromosomes.add(chromosome);
+        if (chromosome.getRestCustomers().isEmpty()) {
+            chromosomes.add(chromosome);
+        }
     }
 
     public Route doCase0(Chromosome chromosome, Customer customer){
@@ -77,9 +78,9 @@ public class Model {
     }
 
     public RouteAndIndex doCase1(Chromosome chromosome, Customer customer){
-        // add customer to the route to which it adds the minimal distance
+        // add customer to the route and position to which it adds the minimal distance
         Route bestRoute = chromosome.getRoutes().get(0);
-        double minimalAddedDistance = 1000;
+        double minimalAddedDistance = 10000;
         int index = bestRoute.getNodes().size()-2;
         Depot closestDepot = this.getClosestDepot(customer);
         Depot bestDepot = closestDepot;
@@ -106,7 +107,6 @@ public class Model {
         RouteAndIndex routeAndIndex = new RouteAndIndex(bestRoute, index, bestDepot, valid);
         return routeAndIndex;
     }
-
 
     public Depot getClosestDepot(Customer customer){
         Coordinate customerCoordinate = customer.getCoordinate();

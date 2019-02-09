@@ -130,6 +130,15 @@ public class Route {
         this.totalDistance = totalDistance;
     }
 
+    public void resetRoute(){
+        for (Node node : this.getNodes()){
+            if (node instanceof Customer){
+                this.getNodes().remove(node);
+            }
+        }
+        this.setEndDepot(this.getStartDepot());
+    }
+
     public int getCurrentDemand() {
         return currentDemand;
     }
