@@ -20,21 +20,21 @@ public class Program {
         GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(0, 0, initialSolutions,
                 model.getChromosomes());
 
+
         Chromosome visualChromosome = geneticAlgorithm.getRankedChromosomes().get(visualSol);
+        visualChromosome.perfectSwap();
         Program.visualizeChromosome(visualChromosome, readFromFile);
     }
 
     public static void visualizeChromosome(Chromosome chromosome, ReadFromFile rff) {
-        double total = 0;
         ArrayList<Route> routes = chromosome.getRoutes();
         HashMap<Route, List<Node>> visual = new HashMap<>();
         for (Route r : routes) {
-            total += r.getTotalDistance();
             ArrayList<Node> nodes = r.getNodes();
             visual.put(r, nodes);
         }
         Visualization visualization = new Visualization();
-        visualization.visualize(visual, chromosome.getRestCustomers() , total, rff.getBenchmark(dataset));
+        visualization.visualize(visual, chromosome.getRestCustomers() , chromosome.getTotalDistance(), rff.getBenchmark(dataset));
     }
 
 }
