@@ -35,17 +35,15 @@ public class GeneticAlgorithm {
         System.out.println("Do crossover");
     }
 
-    public void mutation1(){
-        for (Chromosome c : this.getRankedChromosomes()){
-            int doMutation = this.random.nextInt(100);
-            if (doMutation < mutationRate){
-                int routeNumber = this.random.nextInt(c.getRoutes().size()-1);
-                Route mutationRoute = c.getRoutes().get(routeNumber);
-                if (mutationRoute.getNodes().size() > 4) {
-                        int index1 = this.random.nextInt(mutationRoute.getNodes().size()-3)+1;
-                        int index2 = this.random.nextInt(mutationRoute.getNodes().size()-3)+1;
-                        mutationRoute.swapCustomers(index1, index2);
-                    }
+    public void mutation1(Chromosome possibleMutationChromosome){
+        int doMutation = this.random.nextInt(0);
+        if (doMutation < mutationRate){
+            int routeNumber = this.random.nextInt(possibleMutationChromosome.getRoutes().size()-1);
+            Route mutationRoute = possibleMutationChromosome.getRoutes().get(routeNumber);
+            if (mutationRoute.getNodes().size() > 4) {
+                    int index1 = this.random.nextInt(mutationRoute.getNodes().size()-3)+1;
+                    int index2 = this.random.nextInt(mutationRoute.getNodes().size()-3)+1;
+                    mutationRoute.swapCustomers(index1, index2);
                 }
             }
         }
