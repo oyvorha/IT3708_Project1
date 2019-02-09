@@ -72,4 +72,17 @@ public class Chromosome implements Comparable<Chromosome> {
     public int compareTo(Chromosome o1) {
         return (this.totalDistance - o1.totalDistance);
     }
+
+    public void perfectSwap() {
+        for (Route r : this.getRoutes()) {
+            if (r.getNodes().size() > 4) {
+                for (int i = 1; i < r.getNodes().size() - 1; i++) {
+                    for (int j = r.getNodes().size() - 2; j > 0; j--) {
+                        r.swapCustomers(i, j);
+                    }
+                }
+            }
+        }
+        this.calculateTotalDistance();
+    }
 }
