@@ -31,20 +31,15 @@ public class Route {
     public void addCustomer(Customer customer, int index) {
         if (!this.nodes.contains(customer)) {
             this.nodes.add(index, customer);
-            setTotalDistance();
+            this.setTotalDistance();
             this.currentDemand += customer.getDemand();
-        }
-    }
-
-    public void testAddCustomer(Customer customer, int index) {
-        if (!this.nodes.contains(customer)) {
-            this.nodes.add(index, customer);
         }
     }
 
     public void removeCustomer(Customer customer) {
         if (this.nodes.contains(customer)){
             this.nodes.remove(customer);
+            this.setTotalDistance();
             this.currentDemand = this.getCurrentDemand() - customer.getDemand();
         }
     }
@@ -62,10 +57,10 @@ public class Route {
     public double getAddedDistance(Customer customer, Depot closestDepot, int index) {
         double oldDistance = this.totalDistance;
         Depot oldDepot = this.getEndDepot();
-        testAddCustomer(customer, index);
+        this.addCustomer(customer, index);
         this.setEndDepot(closestDepot);
-        double newDistance = this.calculateRoute();
-        this.nodes.remove(customer);
+        double newDistance = this.getTotalDistance();
+        this.removeCustomer(customer);
         this.setEndDepot(oldDepot);
         return newDistance-oldDistance;
     }
@@ -74,26 +69,20 @@ public class Route {
         if ((this.totalDistance+getAddedDistance(customer, closestDepot, index)) > this.vehicle.getMaxDistance()){
             return false;
         }
-        return ((this.getCurrentDemand()+customer.getDemand())) <= vehicle.getMaxLoad();
-    }
-
-    public void removeEndDepot(Depot endDepot) {
-        if (this.nodes.contains(endDepot)){
-            this.nodes.remove(endDepot);
-        }
+        return ((this.getCurrentDemand()+customer.getDemand()) <= vehicle.getMaxLoad());
     }
 
     public boolean checkValid() {
         if (this.totalDistance > this.vehicle.getMaxDistance()) {
             return false;
-        } return (this.getCurrentDemand() < this.vehicle.getMaxLoad());
+        } return (this.getCurrentDemand() <= this.vehicle.getMaxLoad());
     }
 
     public void swapCustomers(int index1, int index2) {
-        double oldDistance = this.getTotalDistance();
+        // double oldDistance = this.getTotalDistance();
         Collections.swap(this.nodes, index1, index2);
         this.setTotalDistance();
-        if (!this.checkValid() || this.totalDistance >= oldDistance) {
+        if (!this.checkValid()) {
             Collections.swap(this.nodes, index1, index2);
             this.setTotalDistance();
         }
@@ -144,7 +133,7 @@ public class Route {
             }
         }
         for (Node node : removableNodes){
-            this.getNodes().remove(node);
+            this.removeCustomer((Customer) node);
         }
         this.setEndDepot(this.getStartDepot());
         this.setTotalDistance();

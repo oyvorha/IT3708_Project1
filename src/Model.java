@@ -50,7 +50,7 @@ public class Model {
                         route.setEndDepot(closestDepot);
                     }
                 } else {
-                    RouteAndIndex routeAndIndex = this.doCase1(chromosome, customer, this.readFromFile.getDepots());
+                    RouteAndIndex routeAndIndex = this.doCase1(chromosome, customer);
                     Route route = routeAndIndex.getRoute();
                     valid = routeAndIndex.getValid();
                     if (valid){
@@ -77,12 +77,12 @@ public class Model {
         return chromosome.getRoutes().get(routeNumber);
     }
 
-    public static RouteAndIndex doCase1(Chromosome chromosome, Customer customer, ArrayList<Depot> depots){
+    public static RouteAndIndex doCase1(Chromosome chromosome, Customer customer){
         // add customer to the route and position to which it adds the minimal distance
         Route bestRoute = chromosome.getRoutes().get(0);
-        double minimalAddedDistance = 10000;
-        int index = bestRoute.getNodes().size()-2;
-        Depot closestDepot = Model.getClosestDepot(customer, depots);
+        double minimalAddedDistance = 1000;
+        int index = bestRoute.getNodes().size()-1;
+        Depot closestDepot = Model.getClosestDepot(customer, chromosome.getChromosomeDepots());
         Depot bestDepot = closestDepot;
         boolean valid = false;
         for (Route route : chromosome.getRoutes()) {
@@ -90,7 +90,7 @@ public class Model {
             for (int i = 1; i < route.getNodes().size(); i++){
                 if (i < route.getNodes().size() && routeNodes.size() > 2) {
                     if (routeNodes.get(routeNodes.size()-2) instanceof Customer) {
-                        closestDepot = Model.getClosestDepot((Customer) routeNodes.get(routeNodes.size()-2), depots);
+                        closestDepot = route.getEndDepot();
                     }
                 }
                 double addedDistance = route.getAddedDistance(customer, closestDepot, i);
@@ -111,7 +111,7 @@ public class Model {
     public static Depot getClosestDepot(Customer customer, ArrayList<Depot> depots){
         Coordinate customerCoordinate = customer.getCoordinate();
         Depot closestDepot = depots.get(0);
-        double minDistance = customerCoordinate.getEuclidianDistance(depots.get(0).getCoordinate());
+        double minDistance = customerCoordinate.getEuclidianDistance(closestDepot.getCoordinate());
         for (Depot depot : depots){
             double distance = customerCoordinate.getEuclidianDistance(depot.getCoordinate());
             if (distance < minDistance){
