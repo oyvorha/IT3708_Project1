@@ -42,7 +42,49 @@ public class GeneticAlgorithm {
                     mutationRoute.swapCustomers(index1, index2);
                 }
             }
+        possibleMutationChromosome.calculateTotalDistance();
         }
+
+    public Chromosome mutation2(Chromosome possibleMutationChromosome){
+        int doMutation = this.random.nextInt(1);
+        Chromosome mutatedChromosome = new Chromosome(possibleMutationChromosome);
+        if (doMutation < mutationRate){
+            int routeIndex1 = this.random.nextInt(mutatedChromosome.getRoutes().size()-1);
+            Route mutationRoute1 = mutatedChromosome.getRoutes().get(routeIndex1);
+            int routeIndex2 = this.random.nextInt(mutatedChromosome.getRoutes().size()-1);
+            Route mutationRoute2 = mutatedChromosome.getRoutes().get(routeIndex2);
+            while (!mutationRoute1.equals(mutationRoute2)) {
+                routeIndex2 = this.random.nextInt(mutatedChromosome.getRoutes().size()-1);
+                mutationRoute2 = mutatedChromosome.getRoutes().get(routeIndex2);
+            }
+            if (!(mutationRoute1.getNodes().size() < 4 || mutationRoute2.getNodes().size() < 4)) {
+                int index1 = this.random.nextInt(mutationRoute1.getNodes().size()-3)+1;
+                Customer moveCustomer = (Customer) mutationRoute1.getNodes().get(index1);
+                double smallestDistance = 1000;
+                int index = 1;
+                for (int i=1; i < mutationRoute2.getNodes().size()-1; i++) {
+                    double distance = moveCustomer.getCoordinate().getEuclidianDistance(mutationRoute2.getNodes().get(i).getCoordinate());
+                    if (distance < smallestDistance) {
+                        index = i;
+                        smallestDistance = distance;
+                    }
+                }
+                Depot closest = mutationRoute2.getEndDepot();
+                if (index == mutationRoute2.getNodes().size()-2){
+                    closest = Model.getClosestDepot(moveCustomer, mutatedChromosome.getChromosomeDepots());
+                }
+                if (mutationRoute2.checkValidRoute(moveCustomer, closest, index)) {
+                    mutationRoute1.removeCustomer(moveCustomer);
+                    mutationRoute2.addCustomer(moveCustomer, index);
+                    mutationRoute2.setEndDepot(closest);
+                    mutatedChromosome.calculateTotalDistance();
+                    System.out.println("MUTATION "+moveCustomer);
+                    return mutatedChromosome;
+                }
+            }
+        }
+        return mutatedChromosome;
+    }
 
     public Chromosome crossover(Chromosome chromosome1, Chromosome chromosome2) {
         Chromosome offspringChromosome = new Chromosome(chromosome1);
