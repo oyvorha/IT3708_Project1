@@ -42,6 +42,113 @@ public class GeneticAlgorithm {
             }
         }
 
+        /*
+    public Chromosome mutation3(Chromosome possibleMutationChromosome){
+        Chromosome mutatedChromosome = new Chromosome(possibleMutationChromosome);
+        for (Route mutationRoute1 : mutatedChromosome.getRoutes()) {
+            for (Node node : mutationRoute1.getNodes()) {
+                if (node instanceof Customer) {
+                    int doMutation = this.random.nextInt(100);
+                    if (doMutation < this.mutationRate){
+                        Customer moveCustomer = (Customer) node;
+
+                        for (Route r : mutatedChromosome.getRoutes()) {
+                            if (mutationRoute1.equals(r)) {
+                                continue;
+                            }
+                            double smallestDistance = 1000;
+                            int index = 1;
+                            Depot bestDepot = r.getEndDepot();
+                            for (int i = 1; i < r.getNodes().size() - 1; i++) {
+                                if (i == r.getNodes().size() - 2) {
+                                    bestDepot = Model.getClosestDepot(moveCustomer, mutatedChromosome.getChromosomeDepots());
+                                }
+                                double addedDistance = r.getAddedDistance(moveCustomer, bestDepot, i);
+                                boolean feasible = r.checkValidRoute(moveCustomer, bestDepot, i);
+                                if (addedDistance < smallestDistance && feasible) {
+                                    index = i;
+                                    smallestDistance = addedDistance;
+                                }
+                            }
+                            if (smallestDistance < 1000) {
+                                r.removeCustomer(moveCustomer);
+                                r.addCustomer(moveCustomer, index);
+                                r.setEndDepot(bestDepot);
+                                mutatedChromosome.calculateTotalDistance();
+                            }
+                        }
+                    }
+                }
+
+            }
+
+        }
+        return mutatedChromosome;
+    }
+    */
+
+
+    public Chromosome mutation3(Chromosome possibleMutationChromosome){
+        Chromosome mutatedChromosome = new Chromosome(possibleMutationChromosome);
+        int routeIndex1 = this.random.nextInt(mutatedChromosome.getRoutes().size()-1);
+        Route mutationRoute1 = mutatedChromosome.getRoutes().get(routeIndex1);
+
+        if (!(mutationRoute1.getNodes().size() < 4)) {
+            int index1 = this.random.nextInt(mutationRoute1.getNodes().size() - 3) + 1;
+            Customer moveCustomer = (Customer) mutationRoute1.getNodes().get(index1);
+            mutationRoute1.removeCustomer(moveCustomer);
+
+            for (Route r : mutatedChromosome.getRoutes()) {
+                if (mutationRoute1.equals(r)) {
+                    continue;
+                }
+                double smallestDistance = 1000;
+                int index = 1;
+                Depot bestDepot = r.getEndDepot();
+                for (int i = 1; i < r.getNodes().size() - 1; i++) {
+                    if (i == r.getNodes().size() - 2) {
+                        bestDepot = Model.getClosestDepot(moveCustomer, mutatedChromosome.getChromosomeDepots());
+                    }
+                    double addedDistance = r.getAddedDistance(moveCustomer, bestDepot, i);
+                    boolean feasible = r.checkValidRoute(moveCustomer, bestDepot, i);
+                    if (addedDistance < smallestDistance && feasible) {
+                        index = i;
+                        smallestDistance = addedDistance;
+                    }
+                }
+                if (smallestDistance < 1000) {
+                    r.addCustomer(moveCustomer, index);
+                    r.setEndDepot(bestDepot);
+                    mutatedChromosome.calculateTotalDistance();
+                    return mutatedChromosome;
+                }
+            }
+        }
+        return possibleMutationChromosome;
+    }
+
+
+    public Chromosome mutation2(Chromosome possibleMutationChromosome){
+            Chromosome mutatedChromosome = new Chromosome(possibleMutationChromosome);
+            int routeIndex1 = this.random.nextInt(mutatedChromosome.getRoutes().size());
+            Route mutationRoute1 = mutatedChromosome.getRoutes().get(routeIndex1);
+
+            if (!(mutationRoute1.getNodes().size() < 4)) {
+                int index1 = this.random.nextInt(mutationRoute1.getNodes().size() - 2) + 1;
+                Customer moveCustomer = (Customer) mutationRoute1.getNodes().get(index1);
+                mutationRoute1.removeCustomer(moveCustomer);
+                RouteAndIndex routeAndIndex = Model.doCase1(mutatedChromosome, moveCustomer);
+                boolean valid = routeAndIndex.getValid();
+                if (valid){
+                    Route route = routeAndIndex.getRoute();
+                    route.addCustomer(moveCustomer, routeAndIndex.getIndex());
+                    route.setEndDepot(routeAndIndex.getClosestDepot());
+                    return mutatedChromosome;
+                }
+            }
+        return possibleMutationChromosome;
+    }
+
     public static HashMap<Depot, ArrayList<Route>> createDepotMap (ArrayList<Route> routes) {
         HashMap<Depot, ArrayList<Route>> depotMap = new HashMap<>();
         for (Route r : routes) {
@@ -58,10 +165,10 @@ public class GeneticAlgorithm {
 
     public Chromosome crossover(Chromosome chromosome1, Chromosome chromosome2) {
         Chromosome offspringChromosome = new Chromosome(chromosome1);
-        int maxCrossRoutes = Math.floorDiv(chromosome2.getRoutes().size(), 2);
+        int maxCrossRoutes = Math.floorDiv(chromosome2.getRoutes().size(), 3);
         ArrayList<Route> crossRoutes = new ArrayList<>();
         for (int i = 0; i<maxCrossRoutes; i++) {
-            int randomRoute = random.nextInt(maxCrossRoutes);
+            int randomRoute = random.nextInt(chromosome2.getRoutes().size());
             Route possCrossRoute = chromosome2.getRoutes().get(randomRoute);
             if (!crossRoutes.contains(possCrossRoute)) {
                 crossRoutes.add(possCrossRoute);
@@ -93,6 +200,7 @@ public class GeneticAlgorithm {
                 }
             } resetroute.resetRoute();
             Route cross = resetRoutes.get(resetroute);
+            resetroute.setEndDepot(cross.getEndDepot());
             for (Node crossNode : cross.getNodes()) {
                 if (crossNode instanceof Customer) {
                     for (Route restRoute : offspringChromosome.getRoutes()){
@@ -110,19 +218,25 @@ public class GeneticAlgorithm {
         }
         // Alloker notAllocatedCustomers til ruter
         for (Customer customer : notAllocatedCustomers){
-            RouteAndIndex routeAndIndex = Model.doCase1(offspringChromosome, customer, offspringChromosome.getChromosomeDepots());
+            RouteAndIndex routeAndIndex = Model.doCase1(offspringChromosome, customer);
             Route route = routeAndIndex.getRoute();
             boolean valid = routeAndIndex.getValid();
             if (valid){
                 route.addCustomer(customer, routeAndIndex.getIndex());
                 route.setEndDepot(routeAndIndex.getClosestDepot());
             } else {
-                System.out.println("NO OFFSPRING FOUND");
                 return chromosome1;
             }
         }
         offspringChromosome.calculateTotalDistance();
         return offspringChromosome;
     }
-    
+
+    public double getCrossoverRate() {
+        return crossoverRate;
+    }
+
+    public double getMutationRate() {
+        return mutationRate;
+    }
 }
