@@ -44,46 +44,73 @@ public class GeneticAlgorithm {
             }
         }
 
+    public static HashMap<Depot, ArrayList<Route>> createDepotMap (ArrayList<Route> routes) {
+        HashMap<Depot, ArrayList<Route>> depotMap = new HashMap<>();
+        for (Route r : routes) {
+            Depot startDepot = r.getStartDepot();
+            if (depotMap.containsKey(startDepot)) {
+                depotMap.get(startDepot).add(r);
+            } else {
+                ArrayList<Route> routeList = new ArrayList<>();
+                routeList.add(r);
+                depotMap.put(startDepot, routeList);
+            }
+        } return depotMap;
+    }
+
     public Chromosome crossover(Chromosome chromosome1, Chromosome chromosome2) {
         Chromosome offspringChromosome = new Chromosome(chromosome1);
-        Random random = new Random();
-        int randomIndex = random.nextInt(chromosome2.getRoutes().size());
-        Route crossRoute = chromosome2.getRoutes().get(randomIndex);
-        Depot startDepotCrossRoute = crossRoute.getStartDepot();
-        ArrayList<Depot> chromosomeDepots = chromosome1.getChromosomeDepots();
+        int maxCrossRoutes = Math.floorDiv(chromosome2.getRoutes().size(), 2);
+        ArrayList<Route> crossRoutes = new ArrayList<>();
+        for (int i = 0; i<maxCrossRoutes; i++) {
+            int randomRoute = random.nextInt(maxCrossRoutes);
+            Route possCrossRoute = chromosome2.getRoutes().get(randomRoute);
+            if (!crossRoutes.contains(possCrossRoute)) {
+                crossRoutes.add(possCrossRoute);
+            }
+        }
 
         ArrayList<Customer> notAllocatedCustomers = new ArrayList<>();
-        ArrayList<Route> resetRoutes = new ArrayList<>();
+        HashMap<Route, Route> resetRoutes = new HashMap<>();
+        HashMap<Depot, ArrayList<Route>> depotMap = GeneticAlgorithm.createDepotMap(offspringChromosome.getRoutes());
 
-        //offspringChromosome.getRoutes().stream().forEach(c-> System.out.println(c.getNodes()));
+        for (Route crossRoute : crossRoutes) {
+            Depot startDepotCrossRoute = crossRoute.getStartDepot();
+            int customers = 100;
+            Route reset = null;
+            for (Route r : depotMap.get(startDepotCrossRoute)) {
+                if (r.getNodes().size()<customers && !resetRoutes.keySet().contains(r)) {
+                    customers = r.getNodes().size();
+                    reset = r;
+                }
+            }
+            resetRoutes.put(reset, crossRoute);
+        }
 
-        for (Route r : offspringChromosome.getRoutes()){
-            //Reset alle i offspringChromosome som har samme startDepot som crossRoute
-            if (r.getStartDepot() == startDepotCrossRoute){
-                for (Node node : r.getNodes()) {
-                    if (node instanceof Customer) {
-                        notAllocatedCustomers.add((Customer) node);
+        for (Route resetroute : resetRoutes.keySet()) {
+            //Legg til crossRoute i offspringChromosome til en route som er resatt
+            for (Node node : resetroute.getNodes()){
+                if (node instanceof Customer) {
+                    notAllocatedCustomers.add((Customer) node);
+                }
+            } resetroute.resetRoute();
+            Route cross = resetRoutes.get(resetroute);
+            for (Node crossNode : cross.getNodes()) {
+                if (crossNode instanceof Customer) {
+                    for (Route restRoute : offspringChromosome.getRoutes()){
+                        if (restRoute.getNodes().contains(crossNode)) {
+                            restRoute.removeCustomer((Customer) crossNode);
+                        }
+                    }
+                    resetroute.addCustomer((Customer) crossNode, resetroute.getNodes().size()-1);
+                    if (notAllocatedCustomers.contains(crossNode)) {
+                        notAllocatedCustomers.remove(crossNode);
                     }
                 }
-                r.resetRoute();
-                resetRoutes.add(r);
             }
-            //Gå gjennom alle customers i crossRoute og fjern dem fra deres current rute
-            for (Node node : crossRoute.getNodes()){
-                if (r.getNodes().contains(node) && !(node instanceof Depot)){
-                    r.getNodes().remove(node);
-                }
-            }
-        }
-        //Legg til crossRoute i offspringChromosome til en route som er resatt
-        Route crossedRoute = resetRoutes.get(0);
-        for (Node node : crossRoute.getNodes()){
-            if (node instanceof Customer) {
-                crossedRoute.addCustomer((Customer) node, crossedRoute.getNodes().size() - 1);
-            }
+
         }
         // Alloker notAllocatedCustomers til ruter
-        long timeStart = System.currentTimeMillis();
         for (Customer customer : notAllocatedCustomers){
             RouteAndIndex routeAndIndex = Model.doCase1(offspringChromosome, customer, offspringChromosome.getChromosomeDepots());
             Route route = routeAndIndex.getRoute();
@@ -91,15 +118,13 @@ public class GeneticAlgorithm {
             if (valid){
                 route.addCustomer(customer, routeAndIndex.getIndex());
                 route.setEndDepot(routeAndIndex.getClosestDepot());
-            }
-            if ((System.currentTimeMillis()-timeStart) > 10000){
-                offspringChromosome.addRestCustomer(customer);
-                System.out.println("CANNOT FIND SOLUTION");
-                valid = true;
-                timeStart = System.currentTimeMillis();
+            } else {
+                System.out.println("NO OFFSPRING FOUND");
+                return chromosome1;
             }
         }
+        offspringChromosome.calculateTotalDistance();
         return offspringChromosome;
     }
-
+    
 }
