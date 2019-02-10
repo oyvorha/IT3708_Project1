@@ -5,7 +5,7 @@ public class Chromosome implements Comparable<Chromosome> {
     // implement checkValidChromosome
 
     private ArrayList<Route> routes;
-    private int totalDistance;
+    private double totalDistance;
     private ArrayList<Customer> restCustomers;
 
     public Chromosome() {
@@ -66,12 +66,12 @@ public class Chromosome implements Comparable<Chromosome> {
         return this.restCustomers;
     }
 
-    public int getTotalDistance() {
+    public double getTotalDistance() {
         return totalDistance;
     }
 
     public int compareTo(Chromosome o1) {
-        return (this.totalDistance - o1.totalDistance);
+        return ((int) this.totalDistance - (int) o1.totalDistance);
     }
 
     public void perfectSwap() {
@@ -79,24 +79,25 @@ public class Chromosome implements Comparable<Chromosome> {
             if (r.getNodes().size() > 4) {
                 for (int i = 1; i < r.getNodes().size() - 1; i++) {
                     for (int j = r.getNodes().size() - 2; j > 0; j--) {
+                        double old = this.getTotalDistance();
                         r.swapCustomers(i, j);
+                        this.calculateTotalDistance();
+                        if (old < this.getTotalDistance()) {
+                            r.swapCustomers(i, j);
+                            this.calculateTotalDistance();
+                        }
                     }
                 }
             }
         }
-        this.calculateTotalDistance();
     }
 
     public ArrayList<Depot> getChromosomeDepots (){
         ArrayList<Depot> chromosomeDepots = new ArrayList<>();
         for (Route route : this.routes){
             Depot startDepot = route.getStartDepot();
-            Depot endDepot = route.getEndDepot();
             if (!chromosomeDepots.contains(startDepot)){
                 chromosomeDepots.add(startDepot);
-            }
-            if (!chromosomeDepots.contains(endDepot)){
-                chromosomeDepots.add(endDepot);
             }
         }
         return chromosomeDepots;
