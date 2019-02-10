@@ -42,6 +42,7 @@ public class Chromosome implements Comparable<Chromosome> {
     public void addRoute(Route route){
         if (!this.routes.contains(route)){
             this.routes.add(route);
+            this.calculateTotalDistance();
         }
     }
 
