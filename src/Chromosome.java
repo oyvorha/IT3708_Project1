@@ -5,7 +5,7 @@ public class Chromosome implements Comparable<Chromosome> {
     // implement checkValidChromosome
 
     private ArrayList<Route> routes;
-    private int totalDistance;
+    private double totalDistance;
     private ArrayList<Customer> restCustomers;
 
     public Chromosome() {
@@ -42,6 +42,7 @@ public class Chromosome implements Comparable<Chromosome> {
     public void addRoute(Route route){
         if (!this.routes.contains(route)){
             this.routes.add(route);
+            this.calculateTotalDistance();
         }
     }
 
@@ -53,10 +54,6 @@ public class Chromosome implements Comparable<Chromosome> {
         this.totalDistance = distance;
     }
 
-    public ArrayList<Customer> getRestCust() {
-        return restCustomers;
-    }
-
     public void addRestCustomer(Customer customer) {
         this.restCustomers.add(customer);
     }
@@ -65,23 +62,17 @@ public class Chromosome implements Comparable<Chromosome> {
         return this.restCustomers;
     }
 
-    public int getTotalDistance() {
+    public double getTotalDistance() {
         return totalDistance;
     }
 
     public int compareTo(Chromosome o1) {
-        return (this.totalDistance - o1.totalDistance);
+        return ((int) this.totalDistance - (int) o1.totalDistance);
     }
 
     public void perfectSwap() {
         for (Route r : this.getRoutes()) {
-            if (r.getNodes().size() > 4) {
-                for (int i = 1; i < r.getNodes().size() - 1; i++) {
-                    for (int j = r.getNodes().size() - 2; j > 0; j--) {
-                        r.swapCustomers(i, j);
-                    }
-                }
-            }
+            r.perfSwap();
         }
         this.calculateTotalDistance();
     }
@@ -90,12 +81,8 @@ public class Chromosome implements Comparable<Chromosome> {
         ArrayList<Depot> chromosomeDepots = new ArrayList<>();
         for (Route route : this.routes){
             Depot startDepot = route.getStartDepot();
-            Depot endDepot = route.getEndDepot();
             if (!chromosomeDepots.contains(startDepot)){
                 chromosomeDepots.add(startDepot);
-            }
-            if (!chromosomeDepots.contains(endDepot)){
-                chromosomeDepots.add(endDepot);
             }
         }
         return chromosomeDepots;
