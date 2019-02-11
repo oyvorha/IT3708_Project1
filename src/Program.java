@@ -19,7 +19,7 @@ public class Program {
         System.out.println("No of cars " + readFromFile.getVehicles().size());
         model.getFirstSolutions(initialSolutions);
 
-        GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(mutationRate, crossoverRate, initialSolutions,
+        GeneticAlgorithm geneticAlgorithm = new GeneticAlgorithm(mutationRate, crossoverRate,
                 model.getChromosomes());
 
         Program.visualizeChromosome(geneticAlgorithm.getRankedChromosomes().get(0), readFromFile, "start");
