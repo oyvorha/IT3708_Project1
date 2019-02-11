@@ -55,7 +55,7 @@ public class Route {
     }
 
     public double getAddedDistance(Customer customer, Depot closestDepot, int index) {
-        double oldDistance = this.totalDistance;
+        double oldDistance = this.getTotalDistance();
         Depot oldDepot = this.getEndDepot();
         this.addCustomer(customer, index);
         this.setEndDepot(closestDepot);
@@ -94,6 +94,7 @@ public class Route {
 
     public void setEndDepot(Depot endDepot) {
         this.nodes.set(nodes.size()-1, endDepot);
+        this.setTotalDistance();
     }
 
     public Depot getEndDepot() {
@@ -137,6 +138,20 @@ public class Route {
         }
         this.setEndDepot(this.getStartDepot());
         this.setTotalDistance();
+    }
+
+    public void perfSwap() {
+        if (this.getNodes().size() > 4) {
+            for (int i = 1; i < this.getNodes().size() - 1; i++) {
+                for (int j = this.getNodes().size() - 2; j > 0; j--) {
+                    double old = this.getTotalDistance();
+                    this.swapCustomers(i, j);
+                    if (old < this.getTotalDistance()) {
+                        this.swapCustomers(i, j);
+                    }
+                }
+            }
+        }
     }
 
     public int getCurrentDemand() {
