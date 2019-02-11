@@ -54,10 +54,6 @@ public class Chromosome implements Comparable<Chromosome> {
         this.totalDistance = distance;
     }
 
-    public ArrayList<Customer> getRestCust() {
-        return restCustomers;
-    }
-
     public void addRestCustomer(Customer customer) {
         this.restCustomers.add(customer);
     }
@@ -76,20 +72,9 @@ public class Chromosome implements Comparable<Chromosome> {
 
     public void perfectSwap() {
         for (Route r : this.getRoutes()) {
-            if (r.getNodes().size() > 4) {
-                for (int i = 1; i < r.getNodes().size() - 1; i++) {
-                    for (int j = r.getNodes().size() - 2; j > 0; j--) {
-                        double old = this.getTotalDistance();
-                        r.swapCustomers(i, j);
-                        this.calculateTotalDistance();
-                        if (old < this.getTotalDistance()) {
-                            r.swapCustomers(i, j);
-                            this.calculateTotalDistance();
-                        }
-                    }
-                }
-            }
+            r.perfSwap();
         }
+        this.calculateTotalDistance();
     }
 
     public ArrayList<Depot> getChromosomeDepots (){
