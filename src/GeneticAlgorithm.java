@@ -4,14 +4,12 @@ public class GeneticAlgorithm {
 
     private double mutationRate;
     private double crossoverRate;
-    private int populationSize;
     private ArrayList<Chromosome> rankedChromosomes;
     private Random random;
 
-    public GeneticAlgorithm(double mutationRate, double crossoverRate, int populationSize, ArrayList<Chromosome> chromosomes) {
+    public GeneticAlgorithm(double mutationRate, double crossoverRate, ArrayList<Chromosome> chromosomes) {
         this.mutationRate = mutationRate;
         this.crossoverRate = crossoverRate;
-        this.populationSize = populationSize;
         this.rankedChromosomes = chromosomes;
         this.rankChromosomes();
         this.random = new Random();
@@ -20,73 +18,11 @@ public class GeneticAlgorithm {
     private void rankChromosomes() {
         System.out.println("Unsorted chromosomes: "+this.rankedChromosomes);
         Collections.sort(this.rankedChromosomes);
-        if (this.rankedChromosomes.size() > populationSize){
-            this.rankedChromosomes.subList(0, populationSize);
-        }
     }
 
     public ArrayList<Chromosome> getRankedChromosomes() {
-        return rankedChromosomes;
+        return this.rankedChromosomes;
     }
-
-    public void mutation1(Chromosome possibleMutationChromosome){
-        int doMutation = this.random.nextInt(0);
-        if (doMutation < mutationRate){
-            int routeNumber = this.random.nextInt(possibleMutationChromosome.getRoutes().size()-1);
-            Route mutationRoute = possibleMutationChromosome.getRoutes().get(routeNumber);
-            if (mutationRoute.getNodes().size() > 4) {
-                    int index1 = this.random.nextInt(mutationRoute.getNodes().size()-3)+1;
-                    int index2 = this.random.nextInt(mutationRoute.getNodes().size()-3)+1;
-                    mutationRoute.swapCustomers(index1, index2);
-                }
-            }
-        }
-
-        /*
-    public Chromosome mutation3(Chromosome possibleMutationChromosome){
-        Chromosome mutatedChromosome = new Chromosome(possibleMutationChromosome);
-        for (Route mutationRoute1 : mutatedChromosome.getRoutes()) {
-            for (Node node : mutationRoute1.getNodes()) {
-                if (node instanceof Customer) {
-                    int doMutation = this.random.nextInt(100);
-                    if (doMutation < this.mutationRate){
-                        Customer moveCustomer = (Customer) node;
-
-                        for (Route r : mutatedChromosome.getRoutes()) {
-                            if (mutationRoute1.equals(r)) {
-                                continue;
-                            }
-                            double smallestDistance = 1000;
-                            int index = 1;
-                            Depot bestDepot = r.getEndDepot();
-                            for (int i = 1; i < r.getNodes().size() - 1; i++) {
-                                if (i == r.getNodes().size() - 2) {
-                                    bestDepot = Model.getClosestDepot(moveCustomer, mutatedChromosome.getChromosomeDepots());
-                                }
-                                double addedDistance = r.getAddedDistance(moveCustomer, bestDepot, i);
-                                boolean feasible = r.checkValidRoute(moveCustomer, bestDepot, i);
-                                if (addedDistance < smallestDistance && feasible) {
-                                    index = i;
-                                    smallestDistance = addedDistance;
-                                }
-                            }
-                            if (smallestDistance < 1000) {
-                                r.removeCustomer(moveCustomer);
-                                r.addCustomer(moveCustomer, index);
-                                r.setEndDepot(bestDepot);
-                                mutatedChromosome.calculateTotalDistance();
-                            }
-                        }
-                    }
-                }
-
-            }
-
-        }
-        return mutatedChromosome;
-    }
-    */
-
 
     public Chromosome mutation3(Chromosome possibleMutationChromosome){
         Chromosome mutatedChromosome = new Chromosome(possibleMutationChromosome);
@@ -126,7 +62,6 @@ public class GeneticAlgorithm {
         }
         return possibleMutationChromosome;
     }
-
 
     public Chromosome mutation2(Chromosome possibleMutationChromosome){
             Chromosome mutatedChromosome = new Chromosome(possibleMutationChromosome);
